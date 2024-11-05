@@ -4,8 +4,28 @@ using UnityEngine;
 
 public class CommandHandler : MonoBehaviour
 {
+	public GameManager gameManager;
+
 	public DisplayManager DisplayManager;
 	public TMPro.TMP_InputField inputField;
+
+	public delegate void CommandCallback(string[] arguments);
+
+	public Dictionary<string, CommandCallback> commands = new();
+
+	public struct Command
+	{
+		public string commandWord;
+		public string syntax;
+	}
+
+	private void Start()
+	{
+		CommandCallback help = Command_Help;
+		commands.Add("help", help);
+		CommandCallback ls = Command_List;
+		commands.Add("ls", ls);
+	}
 
 	public void OnValueChanged(string value)
 	{
@@ -14,30 +34,62 @@ public class CommandHandler : MonoBehaviour
 
 	public void OnEndEdit(string value)
 	{
-		if (value.Trim() == "") return;
+		inputField.ActivateInputField();
 
 		DisplayManager.SendCurrentMessage();
 
-		ParseCommand(value);
+		if (value.Trim() != "")
+		{
+			ParseCommand(value.Trim());
+		}
 
 		inputField.text = "";
-		inputField.ActivateInputField();
 	}
 
-	public void ParseCommand(string command)
+	public void ParseCommand(string input)
 	{
-		string[] arguments = command.Split();
+		string[] arguments = input.Split();
 
-		if (arguments[0] == "help")
+		if (commands.TryGetValue(arguments[0], out CommandCallback retcom))
 		{
-			Command_Help();
+			retcom(arguments);
+		}
+		else
+		{
+			DisplayManager.PrintLines($"<color=red>Unknown command \"{arguments[0]}\"</color>".Split('$'));
 		}
 	}
 
-	void Command_Help()
+	void Command_Help(string[] arguments)
 	{
-		string HelpString = "Available commands:$$	help$	ls$	exit";
+		string HelpString = "Available commands:$";
 
-		DisplayManager.CommitMultiLineToHistory(HelpString.Split('$'));
+		foreach (string s in commands.Keys)
+		{
+			HelpString += $"	* {s}$";
+		}
+
+		DisplayManager.PrintLines(HelpString.Split('$'));
+	}
+
+	void Command_List(string[] arguments)
+	{
+		string listString = "Path " + gameManager.currentPath + ":$";
+
+		List<string> folders = gameManager.GetCurrentFolders();
+
+		foreach (string folder in folders)
+		{
+			listString += $"	* <color=purple>{folder}\\</color>$";
+		}
+
+		List<SO_File> files = gameManager.GetCurrentFiles();
+
+		foreach (SO_File file in files)
+		{
+			listString += $"	* {file.fileName}$";
+		}
+
+		DisplayManager.PrintLines(listString.Split('$'));
 	}
 }

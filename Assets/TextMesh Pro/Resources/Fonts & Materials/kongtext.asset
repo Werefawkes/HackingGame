@@ -60,9 +60,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: kongtext
   m_EditorClassIdentifier: 
-  hashCode: 0
+  hashCode: 1699023216
   material: {fileID: 2649181696746716980}
-  materialHashCode: 0
+  materialHashCode: 2071828944
   m_Version: 1.1.0
   m_SourceFontFileGUID: c86caf5e088a97548ab29b25cd5bb836
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: c86caf5e088a97548ab29b25cd5bb836, type: 3}
@@ -2467,7 +2467,8 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable: []
+  m_FallbackFontAssetTable:
+  - {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: c86caf5e088a97548ab29b25cd5bb836

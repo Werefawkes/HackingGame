@@ -1,0 +1,4 @@
+- pause menu to exit / settings?
+- command system
+- autocomplete
+- fancy visuals i.e. crt screen effects

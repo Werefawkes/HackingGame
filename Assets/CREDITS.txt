@@ -1,1 +1,5 @@
 font: [ codeman38 | cody@zone38.net | http://www.zone38.net/ ]
+
+monitor computer CRT on off.flac by kyles -- https://freesound.org/s/637691/ -- License: Creative Commons 0
+External Harddisk Starting Up.wav by RutgerMuller -- https://freesound.org/s/51152/ -- License: Creative Commons 0
+Mechanical Keyboard by marco_luzi -- https://freesound.org/s/414758/ -- License: Attribution 3.0

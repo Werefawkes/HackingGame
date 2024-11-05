@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class DisplayManager : MonoBehaviour
 {
-	public string history;
-	public string CurrentInput { get; private set; }
+	public GameManager gameManager;
 
-	public string currentPath = "C:\\";
+	string history;
+
+	public string titleText;
+
+	public string CurrentInput { get; private set; }
 
 	public float caretBlinkRate = 0.85f;
 
@@ -26,6 +29,8 @@ public class DisplayManager : MonoBehaviour
 	private void Start()
 	{
 		caretInterval = 1f / caretBlinkRate;
+
+		PrintLines(titleText.Split('$'));
 	}
 
 	private void Update()
@@ -34,7 +39,7 @@ public class DisplayManager : MonoBehaviour
 		{
 			if (linePrintTimer <= 0)
 			{
-				CommitLineToHistory(lineQueue[0]);
+				PrintLine(lineQueue[0]);
 				lineQueue.RemoveAt(0);
 				linePrintTimer = LinePrintDelay + Random.Range(-LinePrintDelayDeviation, LinePrintDelayDeviation);
 			}
@@ -43,7 +48,7 @@ public class DisplayManager : MonoBehaviour
 		}
 
 		string displayString = history;
-		displayString += '\n' + currentPath + '>' + CurrentInput;
+		displayString += '\n' + gameManager.currentPath + "> " + CurrentInput;
 
 		// Caret
 		if (caretTimer < -caretInterval)
@@ -69,17 +74,16 @@ public class DisplayManager : MonoBehaviour
 
 	public void SendCurrentMessage()
 	{
-		CommitLineToHistory(currentPath + '>' + CurrentInput);
+		PrintLine(gameManager.currentPath + "> " + CurrentInput);
 	}
 
-	public void CommitLineToHistory(string message)
+	public void PrintLine(string message)
 	{
 		history += '\n' + message;
 	}
 
-	public void CommitMultiLineToHistory(string[] messages)
+	public void PrintLines(string[] messages)
 	{
-		CommitLineToHistory("");
 		lineQueue.AddRange(messages);
 	}
 
