@@ -48,7 +48,7 @@ public class DisplayManager : MonoBehaviour
 		}
 
 		string displayString = history;
-		displayString += '\n' + gameManager.currentPath + "> " + CurrentInput;
+		displayString += '\n' + GameManager.CurrentPath + "> " + CurrentInput;
 
 		// Caret
 		if (caretTimer < -caretInterval)
@@ -74,17 +74,16 @@ public class DisplayManager : MonoBehaviour
 
 	public void SendCurrentMessage()
 	{
-		PrintLine(gameManager.currentPath + "> " + CurrentInput);
+		PrintLine(GameManager.CurrentPath + "> " + CurrentInput);
 	}
 
-	public void PrintLine(string message)
+	public void PrintLine(string message, string color = "white")
 	{
-		history += '\n' + message;
+		history += $"\n<color={color}>{message}</color>";
 	}
 
 	public void PrintLines(string[] messages)
 	{
 		lineQueue.AddRange(messages);
 	}
-
 }

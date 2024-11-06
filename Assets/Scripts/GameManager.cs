@@ -5,15 +5,47 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
 	public SO_Directory currentDirectory;
-	public string currentPath;
+	public static string CurrentPath { get; private set; }
+
+	private void Start()
+	{
+		ChangeDirectory(currentDirectory);
+	}
+
+	public void ChangeDirectory(SO_Directory newDirectory)
+	{
+		currentDirectory = newDirectory;
+		CurrentPath = currentDirectory.rootPath;
+	}
 
 	public List<SO_File> GetCurrentFiles()
 	{
-		return currentDirectory.GetFilesAtPath(currentPath);
+		return currentDirectory.GetFilesAtPath(CurrentPath);
 	}
 
 	public List<string> GetCurrentFolders()
 	{
-		return currentDirectory.GetFoldersAtPath(currentPath);
+		return currentDirectory.GetFoldersAtPath(CurrentPath);
+	}
+
+	public bool DoesPathExist(string path)
+	{
+		return currentDirectory.DoesPathExist(path);
+	}
+
+	public bool TryChangePath(string path)
+	{
+		if (currentDirectory.DoesPathExist(path))
+		{
+			CurrentPath = path;
+			return true;
+		}
+
+		return false;
+	}
+
+	public void ResetPath()
+	{
+		CurrentPath = currentDirectory.rootPath;
 	}
 }

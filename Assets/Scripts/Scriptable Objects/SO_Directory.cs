@@ -6,6 +6,7 @@ using UnityEngine;
 public class SO_Directory : ScriptableObject
 {
 	public string directoryName;
+	public string rootPath = "C:\\";
 	public List<SO_File> files = new();
 
 	public List<SO_File> GetFilesAtPath(string path)
@@ -29,7 +30,7 @@ public class SO_Directory : ScriptableObject
 		foreach (SO_File file in files)
 		{
 			// If the path ends here we can continue
-			if (file.path == path)
+			if (file.path == path || file.path.Length < path.Length)
 			{
 				continue;
 			}
@@ -51,5 +52,17 @@ public class SO_Directory : ScriptableObject
 		}
 
 		return retVal;
+	}
+
+	public bool DoesPathExist(string path)
+	{
+		foreach (SO_File file in files)
+		{
+			if (file.path == path || file.path.Contains(path))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }
