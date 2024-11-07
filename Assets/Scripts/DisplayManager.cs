@@ -30,7 +30,8 @@ public class DisplayManager : MonoBehaviour
 	{
 		caretInterval = 1f / caretBlinkRate;
 
-		PrintLines(titleText.Split('$'));
+		QueueLines(titleText.Split('$'));
+		QueueLines("Type 'help' for a list of commands");
 	}
 
 	private void Update()
@@ -82,8 +83,13 @@ public class DisplayManager : MonoBehaviour
 		history += $"\n<color={color}>{message}</color>";
 	}
 
-	public void PrintLines(string[] messages)
+	public void QueueLines(string[] messages)
 	{
 		lineQueue.AddRange(messages);
+	}
+
+	public void QueueLines(string message)
+	{
+		lineQueue.Add(message);
 	}
 }

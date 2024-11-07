@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Test2.txt
   m_EditorClassIdentifier: 
   fileName: Test2.txt
-  path: C:\Users\Gracie\Documents\
+  path: C:\Users\Gracie\Documents\Passwords\
   contents: Test file 2 :o

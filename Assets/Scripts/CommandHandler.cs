@@ -11,57 +11,46 @@ public class CommandHandler : MonoBehaviour
 
 	public delegate void CommandCallback(string[] arguments);
 
-	public Dictionary<string, Command> commands = new();
-
-	public struct Command
-	{
-		public string commandWord;
-		public string syntax;
-		public string description;
-		public int minArguments;
-		public int maxArguments;
-		public CommandCallback callback;
-		public void Invoke(string[] arguments)
-		{
-			callback(arguments);
-		}
-	}
+	public List<Command> currentCommands = new();
+	public List<Command> standardCommands = new();
 
 	private void Start()
 	{
 		Command help = new()
 		{
-			commandWord = "help",
-			syntax = "help [command]",
-			description = "Lists available commands or info about a command",
-			minArguments = 0,
-			maxArguments = 1,
-			callback = Command_Help
+			CommandWord = "help",
+			Syntax = "help [command]",
+			Description = "Lists available commands or info about a command",
+			MinArguments = 0,
+			MaxArguments = 1,
+			Callback = Command_Help
 		};
 
 		Command ls = new()
 		{
-			commandWord = "ls",
-			syntax = "ls",
-			description = "Lists folders and files at the current path",
-			minArguments = 0,
-			maxArguments = 0,
-			callback = Command_List
+			CommandWord = "ls",
+			Syntax = "ls",
+			Description = "Lists folders and files at the current path",
+			MinArguments = 0,
+			MaxArguments = 0,
+			Callback = Command_List
 		};
 
 		Command cd = new()
 		{
-			commandWord = "cd",
-			syntax = "cd [folder]",
-			description = "Changes the current directory. Pass '..' to move up one directory",
-			minArguments = 0,
-			maxArguments = 1,
-			callback = Command_ChangeDirectory
+			CommandWord = "cd",
+			Syntax = "cd [folder]",
+			Description = "Changes the current directory. Pass '..' to move up one directory",
+			MinArguments = 0,
+			MaxArguments = 1,
+			Callback = Command_ChangeDirectory
 		};
 
-		commands.Add("help", help);
-		commands.Add("ls", ls);
-		commands.Add("cd", cd);
+		standardCommands.Add(help);
+		standardCommands.Add(ls);
+		standardCommands.Add(cd);
+
+		currentCommands = standardCommands;
 	}
 
 	public void OnValueChanged(string value)
@@ -83,19 +72,44 @@ public class CommandHandler : MonoBehaviour
 		inputField.text = "";
 	}
 
+	public void YesNoPopup(string message, CommandCallback yesCallback, CommandCallback noCallback)
+	{
+		Command yes = new()
+		{
+			CommandWord = "yes",
+			Callback = yesCallback
+		};
+		Command no = new()
+		{
+			CommandWord = "no",
+			Callback = noCallback
+		};
+
+		Popup(message, new[] { yes, no } );
+	}
+
+	public void Popup(string message, Command[] responses)
+	{
+		// Send the message to the display
+		DisplayManager.PrintLine(message);
+	}
+
+	#region Commands
 	public void ParseCommand(string input)
 	{
 		string[] arguments = input.Split();
 
-		if (commands.TryGetValue(arguments[0], out Command command))
+		Command command = currentCommands.Find(c => c.CommandWord == arguments[0]);
+		
+		if (command.IsValid())
 		{
-			if (arguments.Length - 1 < command.minArguments)
+			if (arguments.Length - 1 < command.MinArguments)
 			{
-				DisplayManager.PrintLine($"Error: Too few arguments for command '{command.commandWord}'", "red");
+				DisplayManager.PrintLine($"Error: Too few arguments for command '{command.CommandWord}'", "red");
 			}
-			else if (arguments.Length - 1 > command.maxArguments)
+			else if (arguments.Length - 1 > command.MaxArguments)
 			{
-				DisplayManager.PrintLine($"Error: Too many arguments for command '{command.commandWord}'", "red");
+				DisplayManager.PrintLine($"Error: Too many arguments for command '{command.CommandWord}'", "red");
 			}
 			else
 			{
@@ -104,7 +118,7 @@ public class CommandHandler : MonoBehaviour
 		}
 		else
 		{
-			DisplayManager.PrintLines($"<color=red>Unknown command \"{arguments[0]}\"</color>".Split('$'));
+			DisplayManager.QueueLines($"<color=red>Unknown command \"{arguments[0]}\"</color>".Split('$'));
 		}
 	}
 
@@ -115,9 +129,11 @@ public class CommandHandler : MonoBehaviour
 
 		if (arguments.Length == 2)
 		{
-			if (commands.TryGetValue(arguments[1], out Command command))
+			Command command = currentCommands.Find(c => c.CommandWord == arguments[1]);
+
+			if (command.IsValid())
 			{
-				HelpString += $"Usage: {command.syntax}${command.description}$";
+				HelpString += $"Usage: {command.Syntax}${command.Description}$";
 			}
 			else
 			{
@@ -130,13 +146,13 @@ public class CommandHandler : MonoBehaviour
 			// List commands
 			HelpString += "Available commands:$";
 
-			foreach (string s in commands.Keys)
+			foreach (Command c in currentCommands)
 			{
-				HelpString += $"	* {s}$";
+				HelpString += $"	* {c.CommandWord}$";
 			}
 		}
 
-		DisplayManager.PrintLines(HelpString.Split('$'));
+		DisplayManager.QueueLines(HelpString.Split('$'));
 	}
 
 	void Command_List(string[] arguments)
@@ -147,7 +163,7 @@ public class CommandHandler : MonoBehaviour
 
 		foreach (string folder in folders)
 		{
-			listString += $"	* <color=purple>{folder}\\</color>$";
+			listString += $"	* <color=purple>{folder}</color>$";
 		}
 
 		List<SO_File> files = gameManager.GetCurrentFiles();
@@ -157,7 +173,7 @@ public class CommandHandler : MonoBehaviour
 			listString += $"	* {file.fileName}$";
 		}
 
-		DisplayManager.PrintLines(listString.Split('$'));
+		DisplayManager.QueueLines(listString.Split('$'));
 	}
 
 	void Command_ChangeDirectory(string[] arguments)
@@ -179,4 +195,5 @@ public class CommandHandler : MonoBehaviour
 			DisplayManager.PrintLine($"Error: Path {targetPath} does not exist", "red");
 		}
 	}
+	#endregion
 }

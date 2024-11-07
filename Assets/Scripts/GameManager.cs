@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static SO_Directory;
 
 public class GameManager : MonoBehaviour
 {
@@ -28,14 +29,14 @@ public class GameManager : MonoBehaviour
 		return currentDirectory.GetFoldersAtPath(CurrentPath);
 	}
 
-	public bool DoesPathExist(string path)
+	public PathState DoesPathExist(string path)
 	{
 		return currentDirectory.DoesPathExist(path);
 	}
 
 	public bool TryChangePath(string path)
 	{
-		if (currentDirectory.DoesPathExist(path))
+		if (currentDirectory.DoesPathExist(path) == PathState.Exists)
 		{
 			CurrentPath = path;
 			return true;
