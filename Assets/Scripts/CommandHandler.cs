@@ -9,10 +9,12 @@ public class CommandHandler : MonoBehaviour
 	public DisplayManager DisplayManager;
 	public TMPro.TMP_InputField inputField;
 
+	public bool listCommands = false;
+
 	public delegate void CommandCallback(string[] arguments);
 
-	public List<Command> currentCommands = new();
-	public List<Command> standardCommands = new();
+	public static List<Command> currentCommands = new();
+	public static List<Command> standardCommands = new();
 
 	private void Start()
 	{
@@ -46,9 +48,27 @@ public class CommandHandler : MonoBehaviour
 			Callback = Command_ChangeDirectory
 		};
 
-		standardCommands.Add(help);
-		standardCommands.Add(ls);
-		standardCommands.Add(cd);
+		Command open = new()
+		{
+			CommandWord = "open",
+			Syntax = "open [file name]",
+			Description = "Open or runs the specified file",
+			MinArguments = 1,
+			MaxArguments = 1,
+			Callback = Command_OpenFile
+		};
+
+		Command exit = new()
+		{
+			CommandWord = "exit",
+			Syntax = "exit",
+			Description = "Closes the game",
+			MinArguments = 0,
+			MaxArguments = 0,
+			Callback = Command_Exit
+		};
+
+		standardCommands.AddRange(new[] { help, ls, cd, open, exit });
 
 		currentCommands = standardCommands;
 	}
@@ -85,13 +105,26 @@ public class CommandHandler : MonoBehaviour
 			Callback = noCallback
 		};
 
-		Popup(message, new[] { yes, no } );
+		Popup(message, new() { yes, no } );
 	}
 
-	public void Popup(string message, Command[] responses)
+	public void Popup(string message, List<Command> responses)
 	{
 		// Send the message to the display
 		DisplayManager.PrintLine(message);
+
+		currentCommands = responses;
+	}
+
+	public static void SetCurrentCommands(List<Command> commands)
+	{
+		Command reset = new()
+		{
+			CommandWord = "exit",
+			Callback = Command_ResetScene
+		};
+		commands.Add(reset);
+		currentCommands = commands;
 	}
 
 	#region Commands
@@ -118,10 +151,9 @@ public class CommandHandler : MonoBehaviour
 		}
 		else
 		{
-			DisplayManager.QueueLines($"<color=red>Unknown command \"{arguments[0]}\"</color>".Split('$'));
+			DisplayManager.PrintError($"Unknown command: '{arguments[0]}'");
 		}
 	}
-
 
 	void Command_Help(string[] arguments)
 	{
@@ -157,7 +189,7 @@ public class CommandHandler : MonoBehaviour
 
 	void Command_List(string[] arguments)
 	{
-		string listString = "Path " + GameManager.CurrentPath + ":$";
+		string listString = "<color=yellow>Path " + GameManager.CurrentPath + ":</color>$";
 
 		List<string> folders = gameManager.GetCurrentFolders();
 
@@ -183,17 +215,64 @@ public class CommandHandler : MonoBehaviour
 			gameManager.ResetPath();
 			return;
 		}
+		string targetPath;
 
-		string targetPath = GameManager.CurrentPath + arguments[1];
-		if (!targetPath.EndsWith('\\'))
+		if (arguments[1] == "..")
 		{
-			targetPath += '\\';
+			targetPath = GameManager.CurrentPath;
+			int lastSlash = targetPath.Trim('\\').LastIndexOf('\\');
+
+			if (lastSlash < 0)
+			{
+				DisplayManager.PrintError("Cannot move up in the root directory");
+				return;
+			}
+
+			targetPath = targetPath.Substring(0, lastSlash + 1);
+		}
+		else // Regular path change
+		{
+			targetPath = GameManager.CurrentPath + arguments[1];
+
+			if (!targetPath.EndsWith('\\'))
+			{
+				targetPath += '\\';
+			}
 		}
 
 		if (!gameManager.TryChangePath(targetPath))
 		{
-			DisplayManager.PrintLine($"Error: Path {targetPath} does not exist", "red");
+			DisplayManager.PrintError($"Path {targetPath} does not exist");
 		}
+	}
+
+	void Command_OpenFile(string[] arguments)
+	{
+		string filename = arguments[1];
+
+		SO_File file = gameManager.GetFileAtPath(filename);
+
+		if (file)
+		{
+			// Run the file
+			file.RunFile();
+		}
+		else
+		{
+			DisplayManager.PrintError($"File '{filename}' does not exist at path {GameManager.CurrentPath}");
+		}
+
+	}
+
+	static void Command_ResetScene(string[] arguments)
+	{
+		currentCommands = standardCommands;
+	}
+
+
+	void Command_Exit(string[] arguments)
+	{
+		YesNoPopup("Are you sure you want to quit? (yes, no)", x => Application.Quit(), Command_ResetScene);
 	}
 	#endregion
 }

@@ -6,7 +6,9 @@ public class DisplayManager : MonoBehaviour
 {
 	public GameManager gameManager;
 
-	string history;
+	static string history;
+
+	//public SO_Scene currentScene;
 
 	public string titleText;
 
@@ -24,14 +26,16 @@ public class DisplayManager : MonoBehaviour
 	public TMPro.TMP_Text displayText;
 	public TMPro.TMP_InputField inputField;
 
-	public List<string> lineQueue = new();
+	public static List<string> lineQueue = new();
+
+	public static Vector2Int CharacterResolution = new(60, 30);
 
 	private void Start()
 	{
 		caretInterval = 1f / caretBlinkRate;
 
 		QueueLines(titleText.Split('$'));
-		QueueLines("Type 'help' for a list of commands");
+		QueueLine("Type 'help' for a list of commands");
 	}
 
 	private void Update()
@@ -78,18 +82,23 @@ public class DisplayManager : MonoBehaviour
 		PrintLine(GameManager.CurrentPath + "> " + CurrentInput);
 	}
 
-	public void PrintLine(string message, string color = "white")
+	public static void PrintLine(string message, string color = "white")
 	{
 		history += $"\n<color={color}>{message}</color>";
 	}
 
-	public void QueueLines(string[] messages)
+	public static void QueueLines(string[] messages)
 	{
 		lineQueue.AddRange(messages);
 	}
 
-	public void QueueLines(string message)
+	public static void QueueLine(string message, string color = "white")
 	{
-		lineQueue.Add(message);
+		lineQueue.Add($"<color={color}>{message}</color>");
+	}
+
+	public static void PrintError(string message)
+	{
+		PrintLine("Error: " + message, "red");
 	}
 }

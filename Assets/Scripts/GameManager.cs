@@ -45,8 +45,24 @@ public class GameManager : MonoBehaviour
 		return false;
 	}
 
+	public SO_File GetFileAtPath(string path, string fileName)
+	{
+		SO_File file = currentDirectory.GetFilesAtPath(path).Find(f => f.fileName == fileName);
+		return file;
+	}
+
+	public SO_File GetFileAtPath(string fileName)
+	{
+		return GetFileAtPath(CurrentPath, fileName);
+	}
+
 	public void ResetPath()
 	{
 		CurrentPath = currentDirectory.rootPath;
+	}
+
+	public static void ExitGame()
+	{
+		Application.Quit();
 	}
 }

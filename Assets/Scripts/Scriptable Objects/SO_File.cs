@@ -7,4 +7,8 @@ public class SO_File : ScriptableObject
 {
 	public string fileName;
 	public string path;
+
+	public virtual void RunFile()
+	{
+	}
 }

@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 789a244020a465a43b8414a134346e75, type: 3}
-  m_Name: GraciePC
+  m_Script: {fileID: 11500000, guid: c30f2373e943b5d439acebfe7752c0c3, type: 3}
+  m_Name: Email
   m_EditorClassIdentifier: 
-  directoryName: GraciePC
-  files:
-  - {fileID: 11400000, guid: c6d25c4d9573d3d4a9fe64699f0cd966, type: 2}
-  - {fileID: 11400000, guid: cf7fb35dc761ab245b15a9d8ee834f1a, type: 2}
+  sceneName: Email
+  scene: '
+
+'

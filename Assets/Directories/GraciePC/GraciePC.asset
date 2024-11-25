@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 789a244020a465a43b8414a134346e75, type: 3}
+  m_Name: GraciePC
+  m_EditorClassIdentifier: 
+  directoryName: GraciePC
+  rootPath: C:\
+  files:
+  - {fileID: 11400000, guid: c6d25c4d9573d3d4a9fe64699f0cd966, type: 2}
+  - {fileID: 11400000, guid: d5eb5eef7a95bd4458a7ddd9be0e68fa, type: 2}
+  - {fileID: 11400000, guid: 29e4bd5dc47786d4188f9767d1a4faad, type: 2}

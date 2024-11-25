@@ -6,4 +6,10 @@ using UnityEngine;
 public class SO_TextFile : SO_File
 {
 	public string contents;
+
+	public override void RunFile()
+	{
+		DisplayManager.QueueLine(path + fileName + ":");
+		DisplayManager.QueueLine(contents + "\n");
+	}
 }
